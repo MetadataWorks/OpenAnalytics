@@ -1,0 +1,417 @@
+$schema: "https://json-schema.org/draft-07/schema#"
+$id: "http://www.metadataregistry.org.uk/assets/jsonschema/2.3/metadataregistry.json#"
+properties:
+  DataModel:
+    $ref: "#/definitions/DataModel"
+additionalProperties: false
+definitions:
+  Extension:
+    type: "object"
+    required:
+      - "key"
+    properties:
+      Value:
+        type: "string"
+      key:
+        type: "string"
+  Extensions:
+    anyOf:
+      - type: "object"
+        required:
+          - "extension"
+        properties:
+          extension:
+            type: "array"
+            items:
+              $ref: "#/definitions/Extension"
+            minItems: 1
+      - type: "object"
+        properties:
+          descriptiveMetadata:
+            ref: "http://www.metadataregistry.org.uk/assets/jsonschema/2.3/metadataregistry.json#"
+            content: "string"
+  Reference:
+    type: "object"
+    properties:
+      metadata:
+        $ref: "#/definitions/Extensions"
+      archived:
+        type: "boolean"
+      inherited:
+        type: "boolean"
+      name:
+        type: "string"
+      dataModel:
+        type: "string"
+      ref:
+        type: "string"
+      type:
+        type: "string"
+      href:
+        type: "string"
+  Relationship:
+    required:
+      - "relationshipType"
+    allOf:
+      - $ref: "#/definitions/Reference"
+      - type: "object"
+        properties:
+          relationshipType:
+            type: "string"
+  Relationships:
+    type: "object"
+    required:
+      - "fromOrto"
+    properties:
+      fromOrto:
+        type: "array"
+        items:
+          anyOf:
+            - type: "object"
+              properties:
+                from:
+                  $ref: "#/definitions/Relationship"
+            - type: "object"
+              properties:
+                to:
+                  $ref: "#/definitions/Relationship"
+        minItems: 1
+  CatalogueElement:
+    allOf:
+      - $ref: "#/definitions/Reference"
+      - type: "object"
+        properties:
+          description:
+            type: "array"
+            items:
+              type: "string"
+            minItems: 0
+          basedOn:
+            type: "array"
+            items:
+              $ref: "#/definitions/Reference"
+            minItems: 0
+          relatedTo:
+            type: "array"
+            items:
+              $ref: "#/definitions/Reference"
+            minItems: 0
+          synonym:
+            type: "array"
+            items:
+              $ref: "#/definitions/Reference"
+            minItems: 0
+          extensions:
+            type: "array"
+            items:
+              $ref: "#/definitions/Extensions"
+            minItems: 0
+          relationships:
+            type: "array"
+            items:
+              $ref: "#/definitions/Relationships"
+            minItems: 0
+          id:
+            type: "string"
+          status:
+            $ref: "#/definitions/Status"
+  Tag:
+    allOf:
+      - $ref: "#/definitions/CatalogueElement"
+      - type: "object"
+        properties: { }
+  Enumeration:
+    type: "object"
+    required:
+      - "value"
+    properties:
+      Value:
+        type: "string"
+      value:
+        type: "string"
+      id:
+        type: "integer"
+      deprecated:
+        type: "boolean"
+  Enumerations:
+    type: "object"
+    required:
+      - "enumeration"
+    properties:
+      enumeration:
+        type: "array"
+        items:
+          $ref: "#/definitions/Enumeration"
+        minItems: 1
+  MeasurementUnit:
+    allOf:
+      - $ref: "#/definitions/CatalogueElement"
+      - type: "object"
+        properties:
+          symbol:
+            type: "string"
+  DataType:
+    required:
+      - "rule"
+      - "regex"
+      - "enumerations"
+      - "dataClass"
+      - "measurementUnit"
+    allOf:
+      - $ref: "#/definitions/CatalogueElement"
+      - type: "object"
+        properties:
+          rule:
+            type: "string"
+          regex:
+            type: "string"
+          enumerations:
+            $ref: "#/definitions/Enumerations"
+          dataClass:
+            $ref: "#/definitions/DataClass"
+          measurementUnit:
+            $ref: "#/definitions/MeasurementUnit"
+          dataType:
+            $ref: "#/definitions/DataType"
+  DataElement:
+    allOf:
+      - $ref: "#/definitions/CatalogueElement"
+      - type: "object"
+        properties:
+          tag:
+            type: "array"
+            items:
+              $ref: "#/definitions/Tag"
+            minItems: 0
+          dataType:
+            $ref: "#/definitions/DataType"
+  ValidationRule:
+    required:
+      - "component"
+      - "ruleFocus"
+      - "trigger"
+      - "rule"
+      - "errorCondition"
+      - "issueRecord"
+      - "notification"
+      - "notificationTarget"
+    allOf:
+      - $ref: "#/definitions/CatalogueElement"
+      - type: "object"
+        properties:
+          component:
+            type: "string"
+          ruleFocus:
+            type: "string"
+          trigger:
+            type: "string"
+          rule:
+            type: "string"
+          errorCondition:
+            type: "string"
+          issueRecord:
+            type: "string"
+          notification:
+            type: "string"
+          notificationTarget:
+            type: "string"
+          dataElement:
+            type: "array"
+            items:
+              $ref: "#/definitions/DataElement"
+            minItems: 0
+  DataClass:
+    allOf:
+      - $ref: "#/definitions/CatalogueElement"
+      - type: "object"
+        properties:
+          dataClassOrdataElementOrvalidationRule:
+            type: "array"
+            items:
+              anyOf:
+                - $ref: "#/definitions/DataClass"
+                - $ref: "#/definitions/DataElement"
+                - $ref: "#/definitions/ValidationRule"
+            minItems: 0
+  DataModel:
+    allOf:
+      - $ref: "#/definitions/CatalogueElement"
+      - type: "object"
+        properties:
+          revisionNotes:
+            type: "string"
+          policy:
+            type: "array"
+            items:
+              type: "string"
+            minItems: 0
+          dataModelOrdataClassOrdataElement:
+            type: "array"
+            items:
+              anyOf:
+                - $ref: "#/definitions/DataModel"
+                - $ref: "#/definitions/DataClass"
+                - $ref: "#/definitions/DataElement"
+                - $ref: "#/definitions/DataType"
+                - $ref: "#/definitions/MeasurementUnit"
+                - $ref: "#/definitions/ValidationRule"
+                - $ref: "#/definitions/Tag"
+            minItems: 0
+          semanticVersion:
+            type: "string"
+  RelationshipTypeDefinitionDirectionDescription:
+    type: "object"
+    properties:
+      Value:
+        type: "string"
+      label:
+        type: "string"
+  RelationshipTypeDefinition:
+    type: "object"
+    required:
+      - "sourceToDestination"
+      - "destinationToSource"
+      - "source"
+      - "destination"
+      - "name"
+    properties:
+      sourceToDestination:
+        $ref: "#/definitions/RelationshipTypeDefinitionDirectionDescription"
+      destinationToSource:
+        $ref: "#/definitions/RelationshipTypeDefinitionDirectionDescription"
+      rule:
+        type: "string"
+      source:
+        type: "string"
+      destination:
+        type: "string"
+      name:
+        type: "string"
+      bidirectional:
+        type: "boolean"
+      system:
+        type: "boolean"
+      versionSpecific:
+        type: "boolean"
+  RelationshipTypesDefinitions:
+    type: "object"
+    required:
+      - "relationshipType"
+    properties:
+      relationshipType:
+        type: "array"
+        items:
+          $ref: "#/definitions/RelationshipTypeDefinition"
+        minItems: 1
+  Convention:
+    type: "object"
+    properties:
+      target:
+        type: "string"
+      property:
+        type: "string"
+      extension:
+        type: "string"
+      type:
+        type: "string"
+      argument:
+        type: "string"
+      message:
+        type: "string"
+  DataModelPolicyDefinition:
+    type: "object"
+    required:
+      - "convention"
+      - "name"
+    properties:
+      convention:
+        $ref: "#/definitions/Convention"
+      name:
+        type: "string"
+  DataModelPolicyDefinitions:
+    type: "object"
+    required:
+      - "dataModelPolicy"
+    properties:
+      dataModelPolicy:
+        type: "array"
+        items:
+          $ref: "#/definitions/DataModelPolicyDefinition"
+        minItems: 1
+  Catalogue:
+    type: "object"
+    required:
+      - "dataModelOrdataClassOrdataElement"
+    properties:
+      skipDraft:
+        type: "boolean"
+      copyRelationships:
+        type: "boolean"
+      createAutomatically:
+        type: "array"
+        items:
+          type: "string"
+        minItems: 0
+      globalSearchFor:
+        type: "array"
+        items:
+          type: "string"
+        minItems: 0
+      dataModelOrdataClassOrdataElement:
+        type: "array"
+        items:
+          anyOf:
+            - $ref: "#/definitions/DataModel"
+            - $ref: "#/definitions/DataClass"
+            - $ref: "#/definitions/DataElement"
+            - $ref: "#/definitions/DataType"
+            - $ref: "#/definitions/MeasurementUnit"
+            - $ref: "#/definitions/RelationshipTypesDefinitions"
+            - $ref: "#/definitions/DataModelPolicyDefinitions"
+            - $ref: "#/definitions/ValidationRule"
+            - $ref: "#/definitions/Tag"
+        minItems: 1
+  Status:
+    allOf:
+      - type: "string"
+      - enum:
+          - "DRAFT"
+          - "FINALIZED"
+          - "DEPRECATED"
+  KnownRelationshipTypes:
+    allOf:
+      - type: "string"
+      - enum:
+          - "containment"
+          - "base"
+          - "hierarchy"
+          - "relatedTo"
+          - "synonym"
+          - "favourite"
+          - "declaration"
+          - "involvedness"
+          - "ruleContext"
+  KnownCatalogueElementType:
+    allOf:
+      - type: "string"
+      - enum:
+          - "dataClass"
+          - "dataModel"
+          - "dataElement"
+          - "dataType"
+          - "measurementUnit"
+          - "validationRule"
+anyOf:
+  - type: "object"
+    properties:
+      catalogue:
+        $ref: "#/definitions/Catalogue"
+  - type: "object"
+    properties:
+      from:
+        $ref: "#/definitions/Relationship"
+  - type: "object"
+    properties:
+      to:
+        $ref: "#/definitions/Relationship"
+

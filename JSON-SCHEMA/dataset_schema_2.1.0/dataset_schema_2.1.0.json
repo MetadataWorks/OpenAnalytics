@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "https://raw.githubusercontent.com/MetadataWorks/OpenStandards/blob/development/JSON-SCHEMA/dataset_schema_2.1.0/dataset_schema_2.1.0.json",
+  "$id": "https://raw.githubusercontent.com/MetadataWorks/OpenStandards/development/JSON-SCHEMA/dataset_schema_2.1.0/dataset_schema_2.1.0.json",
   "type": "object",
   "title": "HDR UK Dataset",
   "description": "HDR UK Dataset Schema",
